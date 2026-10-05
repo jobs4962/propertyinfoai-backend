@@ -26,6 +26,8 @@ const allowedOrigins = [
   'https://www.propertyinfoai.com',
   'http://www.propertyinfoai.com',
   'https://property-shark.netlify.app',
+  'https://www.propertyinfoai.com',
+  'http://www.propertyinfoai.com',
   'https://property-shark.netlify.app/'
 ];
 
