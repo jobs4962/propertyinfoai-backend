@@ -3,15 +3,16 @@ import { ConflictError, NotFoundError, ForbiddenError } from '../utils/errors.js
 
 export const savedPropertyService = {
   saveProperty: async (userId, { bbl, bin, address }) => {
-    const existing = await savedPropertyModel.findSavedPropertyByUserAndBbl(userId, bbl);
+    const cleanBbl = String(bbl).trim().split('.')[0];
+    const existing = await savedPropertyModel.findSavedPropertyByUserAndBbl(userId, cleanBbl);
     if (existing) {
       return { savedProperty: existing, alreadySaved: true };
     }
 
     const savedProperty = await savedPropertyModel.createSavedProperty({
       userId,
-      bbl,
-      bin,
+      bbl: cleanBbl,
+      bin: bin ? String(bin) : null,
       address,
     });
 
@@ -36,7 +37,10 @@ export const savedPropertyService = {
   deleteSavedProperty: async (userId, id) => {
     const item = await savedPropertyModel.findSavedPropertyById(id);
     if (!item) {
-      throw new NotFoundError('Saved property record not found.');
+      // Fallback: If passed BBL as ID
+      const cleanBbl = String(id).replace('bbl-', '').trim().split('.')[0];
+      await savedPropertyModel.deleteSavedPropertyByUserAndBbl(userId, cleanBbl);
+      return { success: true, message: 'Property removed from saved portfolio.' };
     }
     if (item.userId !== userId) {
       throw new ForbiddenError('Access denied. You cannot delete this saved property.');
@@ -46,12 +50,14 @@ export const savedPropertyService = {
   },
 
   deleteSavedPropertyByBbl: async (userId, bbl) => {
-    await savedPropertyModel.deleteSavedPropertyByUserAndBbl(userId, bbl);
+    const cleanBbl = String(bbl).replace('bbl-', '').trim().split('.')[0];
+    await savedPropertyModel.deleteSavedPropertyByUserAndBbl(userId, cleanBbl);
     return { success: true, message: 'Property removed from saved portfolio.' };
   },
 
   checkIsSaved: async (userId, bbl) => {
-    const existing = await savedPropertyModel.findSavedPropertyByUserAndBbl(userId, bbl);
+    const cleanBbl = String(bbl).trim().split('.')[0];
+    const existing = await savedPropertyModel.findSavedPropertyByUserAndBbl(userId, cleanBbl);
     return { isSaved: !!existing };
   },
 };

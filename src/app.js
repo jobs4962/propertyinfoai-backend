@@ -23,7 +23,8 @@ const allowedOrigins = [
   'http://localhost:5175',
   'http://127.0.0.1:5173',
   'http://127.0.0.1:5174',
-  'http://127.0.0.1:5175',
+  'https://www.propertyinfoai.com',
+  'http://www.propertyinfoai.com',
   'https://property-shark.netlify.app',
   'https://property-shark.netlify.app/'
 ];
